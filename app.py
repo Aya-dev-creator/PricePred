@@ -144,8 +144,8 @@ def create_app() -> Flask:
 
         if request.method == "POST":
             try:
-                action = request.form.get("form_action", "estimate")
-
+                actions = request.form.getlist("form_action")
+                action = actions[-1] if actions else "estimate"
                 lang_raw = (request.form.get("lang") or "fr").lower()
                 if lang_raw in ("fr", "ar"):
                     lang = lang_raw  # type: ignore[assignment]
