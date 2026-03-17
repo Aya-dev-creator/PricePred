@@ -1,155 +1,125 @@
-# Prédicteur de prix d’occasion (FR/AR)
+# 🏷️ Used Item Price Predictor (FR/AR)
 
-Cette petite application web permet d’estimer rapidement le prix d’objets d’occasion (voiture, téléphone, ordinateur, montre, caméra, autre) en **dirhams marocains (DH)**, avec une interface disponible en **français** et en **arabe**, et un **mode clair / sombre**.
-
-Elle est construite avec :
-
-- Python 3
-- Flask
-- HTML + CSS (sans JavaScript obligatoire)
+An intelligent, bilingual web application that helps users quickly estimate the resale price of various used items—such as cars, phones, computers, watches, and cameras—in **Moroccan Dirhams (MAD)**.
 
 ---
 
-## 1. Installation
+## 🎯 Objective
 
-### Prérequis
+The primary objective of this project is to provide a fast, accessible, and user-friendly tool to estimate the second-hand market value of everyday items. Whether you are buying or selling, this app gives you a pedagogical estimation based on the item's age, condition, brand, and category.
 
-- **Python 3.10+** installé (`python --version` dans un terminal).
-- (Optionnel) **Git** si vous voulez versionner le projet.
+## ✨ What Makes It Special?
 
-### Récupérer le projet
+- **🧠 AI-Powered Estimations:** Integrates with Hugging Face's API (using the `Qwen2.5-72B-Instruct` model) to act as a Moroccan market expert and deliver realistic pricing based on item specifics.
+- **📉 Smart Fallback System:** If the AI is unavailable, the app smoothly falls back to a custom heuristic depreciation model tailored to each item category.
+- **🌍 Bilingual Interface:** The app natively supports both **French** and **Arabic**, making it widely accessible to users in Morocco and beyond.
+- **🌗 Custom UI Themes:** Features a clean, CSS-based **Dark and Light mode** that users can toggle.
+- **⚡ Lightweight:** Built purely on Python (Flask) and HTML/CSS. No complex JavaScript dependencies are required for the core experience.
 
-Placez-vous dans le dossier où vous voulez cloner / copier le projet, par exemple sur le Bureau.
+---
 
-Si vous utilisez Git :
+## 🚀 How to Use the App
+
+1. **Access the Application**: Open your web browser and go to the local URL (usually `http://127.0.0.1:5000`).
+2. **Set Preferences**: At the top of the page, choose your preferred Language (Français / العربية) and Theme (Dark / Light), then click "Appliquer" (Apply).
+3. **Select a Category**: Choose the type of item you want to evaluate (e.g., Car, Phone, Computer, Watch, Camera, or Other).
+4. **Enter Details**: Fill in the form with the item's details:
+   - **Brand** & **Model**
+   - **Year** of purchase/manufacture
+   - **Condition** (e.g., "Comme neuf", "Bon état", "Abîmé")
+5. **Get Estimation**: Submit the form. The app will calculate and display the estimated price in **MAD**, along with a detailed summary.
+
+> ⚠️ **Disclaimer:** This tool provides a rough, pedagogical estimation. It is not a professional appraisal.
+
+---
+
+## 🛠️ How to Make It (Installation & Setup)
+
+### Prerequisites
+
+- **Python 3.10+** installed on your system.
+- **Git** (optional, for cloning the repository).
+- A **Hugging Face API Key** (for the AI pricing feature).
+
+### 1. Clone or Download the Project
+
+Navigate to your desired folder and clone the repository:
 
 ```bash
-git clone <url_du_dépôt>
+git clone <repository_url>
 cd app
 ```
 
-Sinon, copiez simplement les fichiers dans un dossier, par exemple `c:\Users\PC\Desktop\app`.
+*(If you don't use Git, simply download and extract the project files into a folder named `app`.)*
 
-### Créer un environnement virtuel (recommandé)
+### 2. Create a Virtual Environment (Recommended)
 
-Sous Windows :
-
+**Windows:**
 ```bash
-cd app
 python -m venv .venv
 .venv\Scripts\activate
 ```
 
-Sous Linux / macOS :
-
+**Linux / macOS:**
 ```bash
-cd app
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### Installer les dépendances
+### 3. Install Dependencies
+
+Install the required Python packages (Flask, huggingface_hub, etc.):
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+### 4. Configure Environment Variables
 
-## 2. Lancer l’application
+To enable the LLM AI pricing predictions, set your Hugging Face API key as an environment variable in your terminal:
 
-Dans le dossier du projet (`app`) avec l’environnement virtuel activé :
+**Windows (Command Prompt):**
+```cmd
+set HF_API_KEY=your_huggingface_token_here
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:HF_API_KEY="your_huggingface_token_here"
+```
+
+**Linux / macOS:**
+```bash
+export HF_API_KEY="your_huggingface_token_here"
+```
+
+### 5. Run the Application
+
+Start the Flask development server:
 
 ```bash
 python app.py
 ```
 
-Le serveur Flask démarre en mode développement.  
-Par défaut, l’application est disponible à l’adresse :
-
-```text
-http://127.0.0.1:5000
-```
-
-Ouvrez cette URL dans votre navigateur.
-
-Pour arrêter le serveur, utilisez `Ctrl + C` dans le terminal.
+The application will now be running at `http://127.0.0.1:5000`. 
+To stop the server, press `Ctrl + C` in your terminal.
 
 ---
 
-## 3. Fonctionnalités
-
-### 3.1. Choix de la langue et du thème
-
-En haut de la page :
-
-- **Langue** : Français / العربية  
-- **Thème** : Sombre / Clair
-
-Après avoir choisi vos préférences, cliquez sur **Appliquer**.  
-La page se recharge avec la langue et le thème sélectionnés.
-
-### 3.2. Catégories prises en charge
-
-- Voiture
-- Téléphone
-- Ordinateur
-- Montre
-- Caméra
-- Autre
-
-Quand vous cliquez sur une catégorie, le formulaire se met à jour automatiquement avec des champs adaptés (marque, modèle, année, etc.) et les champs sont vidés pour une nouvelle estimation.
-
-### 3.3. Estimation
-
-Pour chaque catégorie, vous renseignez quelques informations (par exemple : marque, modèle, année, état).  
-L’application calcule ensuite un **prix estimé en DH** à partir :
-
-- d’un prix neuf indicatif (interne au modèle, propre à chaque catégorie),
-- de l’**âge** estimé à partir de l’année,
-- d’une interprétation textuelle de l’**état** (neuf, comme neuf, bon, moyen, abîmé, etc.).
-
-Le résultat indique :
-
-- la **catégorie** (dans la langue choisie),
-- le **prix estimé** arrondi (en DH),
-- un **texte explicatif** rappelant que l’estimation est indicative.
-
-> ⚠️ **Important**  
-> Il s’agit d’une estimation approximative, purement pédagogique, **ce n’est pas une expertise professionnelle**.
-
----
-
-## 4. Structure du projet
+## 📂 Project Structure
 
 ```text
 app/
-├─ app.py              # Backend Flask + logique d’estimation
-├─ requirements.txt    # Dépendances Python (Flask)
-├─ templates/
-│  └─ index.html       # Page principale (FR/AR, thèmes, formulaires)
-└─ static/
-   └─ styles.css       # Styles globaux, dark/light, layout
+├── app.py              # Backend Flask server, LLM integration & heuristic logic
+├── requirements.txt    # Python dependencies
+├── templates/
+│   └── index.html      # Main HTML template (handles FR/AR UI & forms)
+└── static/
+    └── styles.css      # Custom CSS styles (Layout, Dark/Light mode)
 ```
 
----
+## 🔧 Future Improvements
 
-## 5. Personnalisation
-
-- Vous pouvez ajuster les **valeurs de base des catégories** et la logique de calcul dans `app.py` (`CATEGORY_BASE_PRICE` et la fonction `estimate_price`).
-- Les textes (FR/AR) sont dans `templates/index.html`.
-- Les couleurs et le comportement des thèmes clair/sombre sont définis dans `static/styles.css` via des variables CSS (`--bg-page`, `--text-main`, etc.).
-
----
-
-## 6. Limitations et pistes d’amélioration
-
-- Pas de véritable modèle de machine learning : les prix sont calculés via des règles simples.
-- Les données réelles du marché ne sont pas utilisées.
-
-Idées d’amélioration :
-
-- connecter un vrai modèle ML entraîné sur des annonces,
-- ajouter la persistance des préférences langue/thème (cookies),
-- intégrer une API (par exemple pour récupérer des prix moyens d’occasion).
-
+- Fully replace heuristics with fine-tuned ML models trained on real Moroccan classified ads.
+- Add browser cookies/local storage to remember user language and theme preferences.
+- Scrape or connect to live e-commerce APIs to fetch real-time market averages.

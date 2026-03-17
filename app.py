@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Literal, TypedDict
+import os
 import re
 
 from flask import Flask, render_template, request
@@ -15,7 +16,11 @@ def ask_llm_for_price(category: str, brand: str, model: str, year: str, conditio
     try:
         from huggingface_hub import InferenceClient
         # Initialize client with provided key
-        client = InferenceClient(api_key="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")
+        hf_token = os.environ.get("HF_API_KEY")
+        if not hf_token:
+            print("Warning: HF_API_KEY environment variable is not set.")
+            return None
+        client = InferenceClient(api_key=hf_token)
         
         prompt = (
             f"Tu es un expert en évaluation de prix au Maroc.\n"
@@ -164,7 +169,14 @@ def estimate_price(features: ItemFeatures) -> PredictionResult:
 
 
 def create_app() -> Flask:
-    app = Flask(__name__)
+    import os
+    import traceback
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'), static_folder=os.path.join(base_dir, 'static'))
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        return f"<h1>Internal Server Error</h1><pre>{traceback.format_exc()}</pre>", 500
 
     @app.route("/", methods=["GET", "POST"])
     def index():
